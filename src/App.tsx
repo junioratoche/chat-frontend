@@ -1,26 +1,55 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react"
+import "./App.css"
+import { LinearProgress } from "@mui/material"
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom"
+import { CreateGroupComponent } from "./components/create-group/create-group-component"
+import { HeaderComponent } from "./components/partials/header-component"
+import { LoginComponent } from "./components/login/login-component"
+import { WebSocketMainComponent } from "./components/websocket/websocket-main-component"
+import { useLoaderContext } from "./context/loader-context"
+import { HomeComponent } from "./components/home"
+import { AlertComponent } from "./components/partials/alert-component"
+import { VideoComponent } from "./components/websocket/video-component"
+import { RegisterFormComponent } from "./components/register/register-user"
 
-function App() {
+export const App = (): JSX.Element => {
+  const { loading } = useLoaderContext()
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Router>
+	 {
+	   loading &&
+		  <LinearProgress style={{
+		  position: "absolute",
+		  top: "0",
+		  width: "100%"
+		}}/>
+	 }
+	 <HeaderComponent/>
+	 <Switch>
+	   <Route exact path="/">
+		<HomeComponent/>
+	   </Route>
+	   <Route exact path="/create">
+		<CreateGroupComponent/>
+	   </Route>
+	   <Route exact path="/t/messages">
+		<WebSocketMainComponent/>
+	   </Route>
+	   <Route exact path="/t/messages/:groupId">
+		<WebSocketMainComponent/>
+	   </Route>
+	   <Route exact path="/register">
+		<RegisterFormComponent/>
+	   </Route>
+	   <Route exact path="/login">
+		<LoginComponent/>
+	   </Route>
+	   <Route exact path="/call/:uuid">
+		<VideoComponent/>
+	   </Route>
+	 </Switch>
+	 <AlertComponent/>
+    </Router>
+  )
 }
-
-export default App;
