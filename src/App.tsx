@@ -1,7 +1,7 @@
 import React from "react"
 import "./App.css"
 import { LinearProgress } from "@mui/material"
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom"
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
 import { CreateGroupComponent } from "./components/create-group/create-group-component"
 import { HeaderComponent } from "./components/partials/header-component"
 import { LoginComponent } from "./components/login/login-component"
@@ -17,39 +17,26 @@ export const App = (): JSX.Element => {
 
   return (
     <Router>
-	 {
-	   loading &&
-		  <LinearProgress style={{
-		  position: "absolute",
-		  top: "0",
-		  width: "100%"
-		}}/>
-	 }
-	 <HeaderComponent/>
-	 <Switch>
-	   <Route exact path="/">
-		<HomeComponent/>
-	   </Route>
-	   <Route exact path="/create">
-		<CreateGroupComponent/>
-	   </Route>
-	   <Route exact path="/t/messages">
-		<WebSocketMainComponent/>
-	   </Route>
-	   <Route exact path="/t/messages/:groupId">
-		<WebSocketMainComponent/>
-	   </Route>
-	   <Route exact path="/register">
-		<RegisterFormComponent/>
-	   </Route>
-	   <Route exact path="/login">
-		<LoginComponent/>
-	   </Route>
-	   <Route exact path="/call/:uuid">
-		<VideoComponent/>
-	   </Route>
-	 </Switch>
-	 <AlertComponent/>
+      {loading && (
+        <LinearProgress
+          style={{
+            position: "absolute",
+            top: "0",
+            width: "100%",
+          }}
+        />
+      )}
+      <HeaderComponent />
+      <Routes>
+        <Route path="/" element={<HomeComponent />} />
+        <Route path="/create" element={<CreateGroupComponent />} />
+        <Route path="/t/messages" element={<WebSocketMainComponent />} />
+        <Route path="/t/messages/:groupId" element={<WebSocketMainComponent />} />
+        <Route path="/register" element={<RegisterFormComponent />} />
+        <Route path="/login" element={<LoginComponent />} />
+        <Route path="/call/:uuid" element={<VideoComponent />} />
+      </Routes>
+      <AlertComponent />
     </Router>
   )
 }

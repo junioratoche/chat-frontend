@@ -5,7 +5,7 @@ import FolderIcon from "@mui/icons-material/Folder"
 import { Alert, Avatar, Collapse, List, ListItemButton, ListItemText } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Link, useHistory } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom" // <--- Importa useNavigate en lugar de useHistory
 import { useThemeContext } from "../../context/theme-context"
 import { generateColorMode, generateLinkColorMode } from "../utils/enable-dark-mode"
 import { TypeGroupEnum } from "../../utils/type-group-enum"
@@ -27,24 +27,24 @@ const Clock: React.FunctionComponent<IClockType> = ({ date }) => {
   const [currentCount, setCount] = useState(dateParser(date))
 
   useEffect(() => {
-	 const dateInterval = setInterval(() => {
-	   setCount(dateParser(date))
-	 }, 60000)
-	 return () => {
-	   clearInterval(dateInterval)
-	 }
+     const dateInterval = setInterval(() => {
+       setCount(dateParser(date))
+     }, 60000)
+     return () => {
+       clearInterval(dateInterval)
+     }
     },
     [currentCount]
   )
   return (
     <React.Fragment>
-	 {dateParser(date)}
+     {dateParser(date)}
     </React.Fragment>
   )
 }
 
 export const WebsocketGroupsComponent: React.FunctionComponent<IWebSocketGroupComponent> = ({ groupUrl }) => {
-  const history = useHistory()
+  const navigate = useNavigate() // <--- Utiliza useNavigate en lugar de useHistory
   const dispatch = useDispatch()
   const {
     setLoading
@@ -62,28 +62,28 @@ export const WebsocketGroupsComponent: React.FunctionComponent<IWebSocketGroupCo
   function changeGroupName (url: string) {
     const currentGroup = groups.find((elt) => elt.group.url === url)
     if (currentGroup) {
-	 dispatch(setCurrentGroup({ currentGroup }))
+     dispatch(setCurrentGroup({ currentGroup }))
     }
   }
 
   useEffect(() => {
     if (groups) {
-	 if (groups.length !== 0) {
-	   changeGroupName(groupUrl)
-	   dispatch(setCurrentGroup({ currentGroup: groups[0] }))
-	   dispatch(setCurrentActiveGroup({ currentActiveGroup: groupUrl }))
-	 }
-	 setLoading(false)
-	 setLoadingState(false)
+     if (groups.length !== 0) {
+       changeGroupName(groupUrl)
+       dispatch(setCurrentGroup({ currentGroup: groups[0] }))
+       dispatch(setCurrentActiveGroup({ currentActiveGroup: groupUrl }))
+     }
+     setLoading(false)
+     setLoadingState(false)
     }
   }, [groups])
 
   function redirectToGroup (id: number, url: string) {
     if (url !== groupUrl) {
-	 changeGroupName(url)
-	 dispatch(clearChatHistory())
-	 dispatch(setCurrentActiveGroup({ currentActiveGroup: url }))
-	 history.push("/t/messages/" + url)
+     changeGroupName(url)
+     dispatch(clearChatHistory())
+     dispatch(setCurrentActiveGroup({ currentActiveGroup: url }))
+     navigate("/t/messages/" + url) // <--- Utiliza navigate para redirigir
     }
   }
 

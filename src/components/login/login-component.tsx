@@ -1,7 +1,7 @@
 import LockIcon from "@mui/icons-material/Lock"
 import { Button, Grid, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
-import { Link, useHistory } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useLoaderContext } from "../../context/loader-context"
 import { useThemeContext } from "../../context/theme-context"
 import { generateIconColorMode, generateLinkColorMode } from "../utils/enable-dark-mode"
@@ -15,7 +15,7 @@ import { AxiosError } from "axios"
 export const LoginComponent: React.FunctionComponent = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const history = useHistory()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const { theme } = useThemeContext()
   const { setLoading } = useLoaderContext()
@@ -62,7 +62,8 @@ export const LoginComponent: React.FunctionComponent = () => {
 		isOpen: true
 	   }
 	 }))
-	 window.location.replace("/")
+	 navigate("/")
+	 window.location.reload() // <--- Agregar esta línea
     } catch (err: any) {
 	 dispatch(setAlerts({
 	   alert: {

@@ -2,7 +2,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle"
 import CloseIcon from "@mui/icons-material/Close"
 import { Alert, Button, Collapse, Grid, IconButton, Typography } from "@mui/material"
 import React from "react"
-import { Link, useHistory } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useLoaderContext } from "../../context/loader-context"
 import { useThemeContext } from "../../context/theme-context"
 import { HttpService } from "../../service/http-service"
@@ -15,7 +15,7 @@ import { setAlerts } from "../../reducers"
 
 export const RegisterFormComponent = (): JSX.Element => {
   const { theme } = useThemeContext()
-  const history = useHistory()
+  const navigate = useNavigate()
   const { setLoading } = useLoaderContext()
   const [username, setUsername] = React.useState<string>("")
   const [lastName, setLastName] = React.useState<string>("")
@@ -71,7 +71,7 @@ export const RegisterFormComponent = (): JSX.Element => {
 		  isOpen: true
 		}
 	   }))
-	   history.push("/")
+	   navigate("/")
 	 } catch (err: any) {
 	   if (err.response !== undefined) {
 		errorArray.push(err.response.data)
