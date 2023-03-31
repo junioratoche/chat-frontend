@@ -11,6 +11,8 @@ import { HomeComponent } from "./components/home"
 import { AlertComponent } from "./components/partials/alert-component"
 import { VideoComponent } from "./components/websocket/video-component"
 import { RegisterFormComponent } from "./components/register/register-user"
+import ContactList from "./components/contactlist/contactlist-componente"
+import { CreateChatBoxComponent } from "./components/create-chatbox/create-chatbox-component"
 
 export const App = (): JSX.Element => {
   const { loading } = useLoaderContext()
@@ -35,6 +37,8 @@ export const App = (): JSX.Element => {
         <Route path="/register" element={<RegisterFormComponent />} />
         <Route path="/login" element={<LoginComponent />} />
         <Route path="/call/:uuid" element={<VideoComponent />} />
+        <Route path="/contacts" element={<ContactList />} />
+        <Route path="/chatbox" element={<CreateChatBoxComponent />} />
       </Routes>
       <AlertComponent />
     </Router>
