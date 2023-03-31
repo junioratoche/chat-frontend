@@ -100,9 +100,11 @@ export class HttpService {
   }
 
   async searchUser(email: string) {
-    const response = await this.axios.get(`/users?email=${email}`);
+    const response = await this.instance.get(`/auth/searchByEmail/${email}`);
     return response;
-  }
+}
+
+  
   
   
 }
