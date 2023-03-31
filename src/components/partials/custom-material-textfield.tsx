@@ -39,7 +39,7 @@ interface ICustomMaterialTextField {
   value: string
   name: string
   isMultiline: boolean
-  type: "password" | "text"
+  type?: "text" | "password" | "email";
   handleChange: (event: any) => void
   isDarkModeEnable: string
   onClick?: () => void

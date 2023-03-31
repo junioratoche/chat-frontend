@@ -14,15 +14,13 @@ export interface WsReducerInitType {
   isWsConnected: boolean,
   wsObject: Client | null,
   groups: IGroupWrapper[],
-  currentActiveGroup: string,
+  currentActiveGroup: string | null,
   allMessagesFetched: boolean,
   usersInConversationList: [],
   chatHistory: FullMessageModel[],
-
-  alerts: FeedbackModel[]
-
-  authLoading: boolean
-
-  callStarted: boolean
-  callUrl: string
+  alerts: FeedbackModel[],
+  authLoading: boolean,
+  callStarted: boolean,
+  callUrl: string,
 }
+

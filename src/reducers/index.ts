@@ -66,14 +66,18 @@ const mainReducer = createSlice({
 	 state.wsObject = payload.wsObj
     },
     createGroup: (state, { payload }: PayloadAction<{ group: GroupModel }>) => {
-	 const groups = [...state.groups]
-	 groups.unshift({
-	   group: payload.group,
-	   groupCall: { anyCallActive: false }
-	 })
-	 state.chatHistory = []
-	 state.groups = groups
-    },
+		const groups = [...state.groups];
+		groups.unshift({
+		  group: payload.group,
+		  groupCall: { anyCallActive: false },
+		  chatId: '', // Agrega una propiedad 'chatId' con un valor predeterminado o usa una variable con el valor correcto
+		  members: [] // Agrega una propiedad 'members' con un valor predeterminado o usa una variable con el valor correcto
+		});
+		state.chatHistory = [];
+		state.groups = groups;
+	},
+	
+	  
     setGroupWithCurrentCall: (state, { payload }: PayloadAction<{ groupUrl: string, roomUrl?: string }>) => {
 	 const groups = [...state.groups]
 	 groups.map((group) => {
@@ -109,37 +113,35 @@ const mainReducer = createSlice({
 	 state.authLoading = payload.isLoading
     },
     updateGroupsWithLastMessageSent: (state, { payload }: PayloadAction<{ message: FullMessageModel, userId: number }>) => {
-	 const groupWrappers = [...state.groups]
-	 const groupIdToUpdate = payload.message.groupId
-	 const {
-	   message,
-	   userId
-	 } = payload
-	 const isMessageSendByCurrentUser = message.userId === userId
-	 const groupsTemp = groupWrappers.map((groupWrapper) => {
-	   const group = { ...groupWrapper.group }
-	   if (groupWrapper.group.id === groupIdToUpdate) {
-		if (message.type === TypeMessageEnum.TEXT) {
-		  group.lastMessageSender = message.sender
-		  group.lastMessage = message.message
-		} else {
-		  group.lastMessage = `${isMessageSendByCurrentUser ? "You" : message.sender} ${message.message}`
-		  group.lastMessageSender = undefined
+		const groupWrappers = [...state.groups]
+		const groupIdToUpdate = payload.message.groupId
+		const { message, userId } = payload
+		const isMessageSendByCurrentUser = message.userId === userId
+		const groupsTemp = groupWrappers.map((groupWrapper) => {
+			const group = { ...groupWrapper.group }
+			if (groupWrapper.group.id === groupIdToUpdate) {
+				if (message.type === TypeMessageEnum.TEXT) {
+					group.lastMessageSender = message.sender
+					group.lastMessage = message.message
+				} else {
+					group.lastMessage = `${isMessageSendByCurrentUser ? "You" : message.sender} ${message.message}`
+					group.lastMessageSender = undefined
+				}
+				group.lastMessageDate = message.time
+				group.lastMessageSeen = isMessageSendByCurrentUser ? true : message.isMessageSeen
+			}
+			return {
+				...groupWrapper, // Mantén todas las propiedades existentes de groupWrapper
+				group, // Actualiza la propiedad 'group'
+			}
+		})
+		const groupIndexToMove = groupsTemp.findIndex((elt) => elt.group.url === message.groupUrl)
+		if (groupIndexToMove !== -1) {
+			groupsTemp.unshift(groupsTemp.splice(groupIndexToMove, 1)[0])
 		}
-		group.lastMessageDate = message.time
-		group.lastMessageSeen = isMessageSendByCurrentUser ? true : message.isMessageSeen
-	   }
-	   return {
-		group,
-		groupCall: groupWrapper.groupCall
-	   }
-	 })
-	 const groupIndexToMove = groupsTemp.findIndex((elt) => elt.group.url === message.groupUrl)
-	 if (groupIndexToMove !== -1) {
-	   groupsTemp.unshift(groupsTemp.splice(groupIndexToMove, 1)[0])
-	 }
-	 state.groups = groupsTemp
-    }
+		state.groups = groupsTemp
+	}
+	
   }
 })
 

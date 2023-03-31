@@ -9,6 +9,7 @@ import { setAlerts, store } from "../reducers"
 export class HttpService {
 
   private instance: AxiosInstance
+  axios: any
 
   constructor () {
     const baseURL = process.env.NODE_ENV === "development" ? "http://localhost:9090/api" : "http://production-url.com/api"
@@ -92,4 +93,16 @@ export class HttpService {
   public uploadFile (data: FormData): Promise<AxiosResponse> {
     return this.instance.post("upload", data)
   }
+
+  async createConversation(conversationData: any) {
+    const response = await this.axios.post("/conversations", conversationData);
+    return response;
+  }
+
+  async searchUser(email: string) {
+    const response = await this.axios.get(`/users?email=${email}`);
+    return response;
+  }
+  
+  
 }

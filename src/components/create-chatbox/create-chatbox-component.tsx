@@ -18,7 +18,7 @@ export const CreateChatBoxComponent = () => {
   const { theme } = useThemeContext();
   const dispatch = useDispatch();
   const httpService = new HttpService();
-  const [contact, setContact] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
   const [contactDetails, setContactDetails] = useState<any>(null);
 
   useEffect(() => {
@@ -50,25 +50,37 @@ export const CreateChatBoxComponent = () => {
 
   async function handleSearchContact(event: any) {
     event.preventDefault();
-    if (!contact) {
+    if (!contactEmail) {
       return;
     }
     try {
-      const response = await httpService.searchUser(contact);
+      const response = await httpService.searchUser(contactEmail);
       setContactDetails(response.data);
-    } catch (error) {
+    } catch (error: any) {
       setContactDetails(null);
+      const errorMessage =
+        error.response?.data?.message || "Error searching contact";
       dispatch(
         setAlerts({
           alert: {
             isOpen: true,
             alert: "error",
-            text: error.response?.data?.message || "Error searching contact",
+            text: errorMessage,
           },
         })
       );
     }
   }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContactEmail(e.target.value);
+  };
+
+  const submitAddContact = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearchContact(e);
+    }
+  };
 
   return (
     <div
@@ -106,7 +118,7 @@ export const CreateChatBoxComponent = () => {
                 <Button
                   className={"button-register-form"}
                   style={{ marginTop: "15px" }}
-                  onClick={(event) => addContactToConversation(event)}
+                  onClick={handleCreateChatBox}
                   fullWidth
                   variant="outlined"
                   color="primary"
