@@ -144,22 +144,22 @@ export const WebSocketChatComponent: React.FunctionComponent<{ groupUrl: string 
   }
 
   async function sendMessage() {
-	if (message !== "") {
-	  if (getPayloadSize(message) < 8192 && ws && ws.active) {
-		const transport = new TransportModel(
-		  userId || 0,
-		  TransportActionEnum.SEND_GROUP_MESSAGE,
-		  undefined,
-		  currentActiveGroup || "", // Agrega el operador || aquí
-		  message
-		);
-		ws.publish({
-		  destination: "/app/message",
-		  body: JSON.stringify(transport),
-		});
-	  }
-	  setMessage("");
-	}
+  if (message !== "") {
+    if (getPayloadSize(message) < 8192 && ws && ws.active) {
+      const transport = new TransportModel(
+        userId || 0,
+        TransportActionEnum.SEND_GROUP_MESSAGE,
+        undefined,
+        currentActiveGroup || "", // Agrega el operador || aquí
+        message
+      );
+      ws.publish({
+        destination: "/app/message",
+        body: JSON.stringify(transport),
+      });
+    }
+    setMessage("");
+  }
     if (file !== null) {
 	 const userId = String(user?.id)
 	 const formData = new FormData()

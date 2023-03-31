@@ -5,6 +5,7 @@ import {
   Avatar,
   ListItemText,
   ListItemButton,
+  Input,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../store/userSlice";
@@ -28,6 +29,8 @@ const ContactList = () => {
   const contacts = useSelector(selectContacts);
   const [error, setError] = useState<string | null>(null);
   const [webSocketClient, setWebSocketClient] = useState<Client | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredContacts, setFilteredContacts] = useState(contacts);
 
   useEffect(() => {
     if (!user?.token) {
@@ -68,10 +71,24 @@ const ContactList = () => {
     };
   }, [dispatch, webSocketClient]);
 
+  useEffect(() => {
+    setFilteredContacts(
+      contacts.filter((contact) =>
+        contact.username.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }, [searchTerm, contacts]);
+
   return (
     <div className={classes.root}>
+      <Input
+        type="text"
+        placeholder="Buscar contacto"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
       <List component="nav" aria-label="main mailbox folders">
-        {contacts.map((contact) => (
+        {filteredContacts.map((contact) => (
           <ListItemButton key={contact.id}>
             <ListItemAvatar>
               <Avatar>{contact.username[0].toUpperCase()}</Avatar>
