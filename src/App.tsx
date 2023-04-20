@@ -13,6 +13,7 @@ import { VideoComponent } from "./components/websocket/video-component"
 import { RegisterFormComponent } from "./components/register/register-user"
 import ContactList from "./components/contactlist/contactlist-componente"
 import { CreateChatBoxComponent } from "./components/create-chatbox/create-chatbox-component"
+import {CreateConversationComponent } from "./components/conversation/create-conversation-component";
 
 export const App = (): JSX.Element => {
   const { loading } = useLoaderContext()
@@ -39,6 +40,7 @@ export const App = (): JSX.Element => {
         <Route path="/call/:uuid" element={<VideoComponent />} />
         <Route path="/contacts" element={<ContactList />} />
         <Route path="/chatbox" element={<CreateChatBoxComponent />} />
+        <Route path="/create/conversation" element={<CreateConversationComponent selectedUser={null} />} />
       </Routes>
       <AlertComponent />
     </Router>
