@@ -12,9 +12,18 @@ export interface UserState {
   id: number | null;
   username: string | null;
   token: string | null;
-  selectedContact: UserState | null;
+  selectedContact: Contact | null;
   messages: Message[];
 }
+
+
+export interface Contact {
+  id: number | null;
+  username: string | null;
+  token: string | null;
+  messages: Message[];
+}
+
 
 const initialState: UserState = {
   id: null,
@@ -38,9 +47,11 @@ export const userSlice = createSlice({
       state.username = null;
       state.token = null;
     },
-    setSelectedContact: (state, action: PayloadAction<UserState>) => {
+    setSelectedContact: (state, action: PayloadAction<Contact | null>) => {
       state.selectedContact = action.payload;
     },
+    
+    
     sendMessage: (state, action: PayloadAction<{ to: number; content: string; }>) => {
       const newMessage: Message = {
         id: state.messages.length + 1,
@@ -54,7 +65,15 @@ export const userSlice = createSlice({
   },
 });
 
+export interface SearchResult {
+  id: number;
+  username: string;
+}
+
+
 export const { setUser, clearUser, setSelectedContact, sendMessage } = userSlice.actions;
 
 export const selectUser = (state: { user: UserState }) => state.user;
-export const selectSelectedContact = (state: { user: UserState }) => state.user.selectedContact;
+export const selectSelectedContact = (state: { user: UserState }) =>
+  state.user ? state.user.selectedContact : null;
+

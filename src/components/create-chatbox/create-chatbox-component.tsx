@@ -1,63 +1,80 @@
-import { Button, Container, CssBaseline, Grid, Typography } from "@mui/material"
-import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { useThemeContext } from "../../context/theme-context"
-import { useDispatch } from "react-redux"
-import { createGroup, setAlerts } from "../../reducers"
-import { CustomTextField } from "../partials/custom-material-textfield"
-import { HttpService } from "../../service/http-service"
+import {
+  Container,
+  CssBaseline,
+  Grid,
+  Typography,
+} from "@mui/material";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useThemeContext } from "../../context/theme-context";
+import { useDispatch, useSelector } from "react-redux";
+import { createGroup, setAlerts } from "../../reducers";
+import { HttpService } from "../../service/http-service";
+import { ChatBox } from "../chatbox/chatbox-componente";
+
+import { selectSelectedContact } from "../store/userSlice";
+import { useAuthContext } from "../../context/auth-context";
+import { CreateConversationComponent } from "../conversation/create-conversation-component";
+
+type SelectedContact = {
+  id: number | string | null;
+  username: string | null;
+};
 
 export const CreateChatBoxComponent = () => {
-  const navigate = useNavigate()
-  const [groupName, setGroupName] = useState("")
-  const { theme } = useThemeContext()
-  const dispatch = useDispatch()
-  const httpService = new HttpService()
+  const navigate = useNavigate();
+  const { theme } = useThemeContext();
+  const dispatch = useDispatch();
+  const httpService = new HttpService();
+  const { user } = useAuthContext();
+
+  const selectedContact: SelectedContact | null = useSelector(
+    selectSelectedContact
+  );
 
   useEffect(() => {
-    document.title = "Create group"
-  }, [])
+    document.title = "Create group";
+  }, []);
 
-  function handleChange (event: any) {
-    event.preventDefault()
-    setGroupName(event.target.value)
-  }
-
-  async function createGroupByName (event: any) {
-    event.preventDefault()
-    if (groupName !== "") {
-      const res =  await httpService.createGroup(groupName)
-      dispatch(setAlerts({
-        alert: {
-          isOpen: true,
-          alert: "success",
-          text: `Group "${groupName}" has been created successfully`
-        }
-      }))
-      dispatch(createGroup({ group: res.data }))
-      navigate(`/t/messages/${res.data.url}`)
-      // setAlerts([...alerts, new FeedbackModel(UUIDv4(), `Cannot create group "${groupName}" : ${err.toString()}`, "error", true)])
-    }
-  }
-
-  function submitGroupCreation (event: any) {
-    if (event.key === undefined || event.key === "Enter") {
-      if (groupName === "") {
-        return
+  async function createGroupByName(event: any) {
+    event.preventDefault();
+    if (selectedContact && selectedContact.username) {
+      // Crea la conversación
+      try {
+        const conversationData = {
+          user1_id: user?.id,
+          user2_id: selectedContact.id,
+        };
+        const conversationRes = await httpService.createConversation(
+          conversationData
+        );
+        dispatch(
+          setAlerts({
+            alert: {
+              isOpen: true,
+              alert: "success",
+              text: `Conversation with "${selectedContact.username}" has been created successfully`,
+            },
+          })
+        );
+        navigate(`/t/messages/${conversationRes.data.url}`);
+      } catch (err) {
+        // Maneja el error
       }
-      createGroupByName(event)
     }
   }
 
   return (
-    <div className={theme}
+    <div
+      className={theme}
       style={{
         height: "calc(100% - 64px)",
         textAlign: "center",
-        paddingTop: "40px"
-      }}>
+        paddingTop: "40px",
+      }}
+    >
       <Container className={"clrcstm"} component="main" maxWidth="xs">
-        <CssBaseline/>
+        <CssBaseline />
         <div className={"main-register-form clrcstm"}>
           <Typography className={"clrcstm"} variant="h6">
             Create a conversation
@@ -65,34 +82,17 @@ export const CreateChatBoxComponent = () => {
         </div>
         <div className={"clrcstm"}>
           <Grid className={"clrcstm"} container spacing={2}>
-            <Grid className={"clrcstm"} item xs={12}>
-              <CustomTextField id={"createGroupMessenger"}
-                label={"Type a name for your group"}
-                name={"groupName"}
-                handleChange={handleChange}
-                value={groupName}
-                type={"text"}
-                keyUp={submitGroupCreation}
-                isDarkModeEnable={theme}
-                isMultiline={false}/>
-            </Grid>
             <div>
               <Grid item xs={12}>
-                <Button
-                  className={"button-register-form"}
-                  style={{ marginTop: "15px" }}
-                  onClick={(event) => createGroupByName(event)}
-                  fullWidth
-                  variant="outlined"
-                  color="primary"
-                >
-                  Create
-                </Button>
+                <ChatBox />
+              </Grid>
+              <Grid item xs={12}>
+                <CreateConversationComponent selectedUser={selectedContact} />
               </Grid>
             </div>
           </Grid>
         </div>
       </Container>
     </div>
-  )
-}
+  );
+};
