@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { setAlerts } from "../../reducers";
 import { HttpService } from "../../service/http-service";
 import { useAuthContext } from "../../context/auth-context";
+import { Button } from "@material-ui/core";
 
 type SelectedContact = {
   id: number | string | null;
@@ -55,7 +56,13 @@ export const CreateConversationComponent: React.FC<CreateConversationProps> = ({
 
   return (
     <div>
-      <button onClick={createConversation}>Create Conversation</button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={createConversation}
+      >
+        Create Conversation
+      </Button>
       <div>Debug: CreateConversationComponent is being rendered.</div>
     </div>
   );

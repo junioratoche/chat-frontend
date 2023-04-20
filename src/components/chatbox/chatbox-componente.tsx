@@ -5,10 +5,7 @@ import Autocomplete, {
   AutocompleteRenderInputParams,
 } from "@mui/material/Autocomplete";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setSelectedContact,
-  selectSelectedContact,
-} from "../store/userSlice";
+import { setSelectedContact, selectSelectedContact } from "../store/userSlice";
 
 import { HttpService } from "../../service/http-service";
 import { ConversationUserModel } from "../../interface-contract/conversation-user-model";
@@ -38,6 +35,7 @@ export const ChatBox = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const selectedContact = useSelector(selectSelectedContact);
+
   const { user } = useAuthContext();
 
   const selectedContactSearchResult = selectedContact
@@ -135,5 +133,4 @@ export const ChatBox = () => {
       </Grid>
     </div>
   );
-
 };
