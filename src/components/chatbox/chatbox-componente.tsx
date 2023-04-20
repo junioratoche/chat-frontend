@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { TextField, Grid, IconButton } from "@material-ui/core";
-import SendIcon from "@material-ui/icons/Send";
+import { TextField, Grid } from "@material-ui/core";
 import Autocomplete, {
   AutocompleteRenderInputParams,
 } from "@mui/material/Autocomplete";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  sendMessage,
   setSelectedContact,
   selectSelectedContact,
 } from "../store/userSlice";
@@ -16,7 +14,6 @@ import { HttpService } from "../../service/http-service";
 import { ConversationUserModel } from "../../interface-contract/conversation-user-model";
 import { debounce } from "lodash";
 import { useAuthContext } from "../../context/auth-context";
-import { CreateConversationComponent } from "../conversation/create-conversation-component";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,21 +44,8 @@ export const ChatBox = () => {
     ? { id: selectedContact.id || 0, username: selectedContact.username || "" }
     : null;
 
-  const [message, setMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-
-  const handleSendMessage = () => {
-    if (!message || !selectedContact?.id) return;
-    dispatch(sendMessage({ to: selectedContact.id, content: message }));
-    setMessage("");
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-    }
-  };
 
   const debouncedSearchUsers = debounce(async (value: string) => {
     setSearchResults(await searchUsers(value));
@@ -134,17 +118,22 @@ export const ChatBox = () => {
             renderInput={(params: AutocompleteRenderInputParams) => (
               <TextField
                 {...params}
-                id="search-input"
-                label="Search contacts"
-                fullWidth
-                variant="outlined"
                 className={classes.input}
+                placeholder="Buscar contactos"
+                variant="outlined"
+                fullWidth
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                  }
+                }}
               />
             )}
-          />          
+            clearOnBlur={false} // Agregar esta línea
+          />
         </Grid>
       </Grid>
     </div>
   );
-};
 
+};

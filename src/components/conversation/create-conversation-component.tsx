@@ -5,24 +5,18 @@ import { setAlerts } from "../../reducers";
 import { HttpService } from "../../service/http-service";
 import { useAuthContext } from "../../context/auth-context";
 
-type SearchResult = {
-  id: number | string;
-  username: string;
+type SelectedContact = {
+  id: number | string | null;
+  username: string | null;
 };
 
-type SelectedContact = {
-    id: number | string | null;
-    username: string | null;
-  };
-  
+interface CreateConversationProps {
+  selectedUser: SelectedContact | null;
+}
 
-  interface CreateConversationProps {
-    selectedUser: SelectedContact | null;
-  }
-
-  export const CreateConversationComponent: React.FC<CreateConversationProps> = ({
-    selectedUser,
-  }) => {
+export const CreateConversationComponent: React.FC<CreateConversationProps> = ({
+  selectedUser,
+}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const httpService = new HttpService();
@@ -62,6 +56,7 @@ type SelectedContact = {
   return (
     <div>
       <button onClick={createConversation}>Create Conversation</button>
+      <div>Debug: CreateConversationComponent is being rendered.</div>
     </div>
   );
 };
