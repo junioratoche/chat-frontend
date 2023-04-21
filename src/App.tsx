@@ -4,6 +4,9 @@ import { LinearProgress } from "@mui/material"
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
 import { CreateGroupComponent } from "./components/create-group/create-group-component"
 import { HeaderComponent } from "./components/partials/header-component"
+// import { Header } from "./components/header/header";
+import { HeaderComponent as Header } from "./components/partials/header-component";
+
 import { LoginComponent } from "./components/login/login-component"
 import { WebSocketMainComponent } from "./components/websocket/websocket-main-component"
 import { useLoaderContext } from "./context/loader-context"
@@ -17,7 +20,7 @@ import {CreateConversationComponent } from "./components/conversation/create-con
 
 
 export const App = (): JSX.Element => {
-  const { loading } = useLoaderContext()
+  const { loading } = useLoaderContext();
 
   return (
     <Router>

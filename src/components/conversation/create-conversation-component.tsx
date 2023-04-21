@@ -13,15 +13,21 @@ type SelectedContact = {
 
 interface CreateConversationProps {
   selectedUser: SelectedContact | null;
+  isLoading?: boolean; // Haz que isLoading sea opcional
 }
 
 export const CreateConversationComponent: React.FC<CreateConversationProps> = ({
   selectedUser,
+  isLoading = false, // Establece un valor predeterminado para isLoading
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const httpService = new HttpService();
   const { user } = useAuthContext();
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Muestra un mensaje de carga
+  }
 
   if (!selectedUser) {
     return null;

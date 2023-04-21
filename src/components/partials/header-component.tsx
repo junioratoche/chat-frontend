@@ -29,6 +29,7 @@ export const HeaderComponent: React.FunctionComponent = () => {
   const [cookie, setCookie] = useCookies();
   const [isHeaderCouldRender, setHeaderRender] = useState<boolean>(false);
   const location = useLocation();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const isCurrentPathVideoComponent =
@@ -38,6 +39,7 @@ export const HeaderComponent: React.FunctionComponent = () => {
     } else {
       setHeaderRender(false);
     }
+    setLoading(false); // Agrega esta línea
   }, [user]);
 
   useEffect(() => {
@@ -138,7 +140,7 @@ export const HeaderComponent: React.FunctionComponent = () => {
                   </Button>
                 </RouterLink>
               )}
-              {!authLoading && user && (
+              {!loading && user && (
                 <RouterLink className={"lnk clrcstm"} to={"/chatbox"}>
                   <Button
                     className={"clrcstm"}
@@ -149,7 +151,6 @@ export const HeaderComponent: React.FunctionComponent = () => {
                   </Button>
                 </RouterLink>
               )}
-
               {!authLoading && user && (
                 <RouterLink className={"lnk clrcstm"} to={"/create"}>
                   <Button

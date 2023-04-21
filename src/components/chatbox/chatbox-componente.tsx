@@ -1,60 +1,47 @@
 import React, { useState, useRef, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { TextField, Grid } from "@material-ui/core";
+import { TextField, Grid } from "@mui/material";
 import Autocomplete, {
+  AutocompleteChangeDetails,
+  AutocompleteChangeReason,
   AutocompleteRenderInputParams,
 } from "@mui/material/Autocomplete";
-import { useDispatch, useSelector } from "react-redux";
-import { setSelectedContact, selectSelectedContact } from "../store/userSlice";
-
+import debounce from "lodash.debounce";
+import { useAuthContext } from "../../context/auth-context";
 import { HttpService } from "../../service/http-service";
 import { ConversationUserModel } from "../../interface-contract/conversation-user-model";
-import { debounce } from "lodash";
-import { useAuthContext } from "../../context/auth-context";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  input: {
-    margin: theme.spacing(1),
-  },
-  searchContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-}));
 
 type SearchResult = {
   id: number | string;
   username: string;
 };
 
-export const ChatBox = () => {
-  const classes = useStyles();
-  const dispatch = useDispatch();
-  const selectedContact = useSelector(selectSelectedContact);
+type Contact = {
+  id: number | null;
+  username: string | null;
+  token: string | null;
+  messages: any[];
+};
 
+interface ChatBoxProps {
+  onContactSelect: (contact: Contact | null) => void;
+}
+
+export const ChatBox: React.FC<ChatBoxProps> = (props) => {
   const { user } = useAuthContext();
 
-  const selectedContactSearchResult = selectedContact
-    ? { id: selectedContact.id || 0, username: selectedContact.username || "" }
-    : null;
+  const { onContactSelect } = props;
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
-  const debouncedSearchUsers = debounce(async (value: string) => {
+  const debouncedSearchUsersRef = useRef(debounce(async (value: string) => {
     setSearchResults(await searchUsers(value));
-  }, 2000); // 2000ms de retardo
-
-  const debouncedSearchUsersRef = useRef(debouncedSearchUsers);
+  }, 2000));
 
   useEffect(() => {
-    return () => {
-      debouncedSearchUsersRef.current.cancel();
-    };
+    debouncedSearchUsersRef.current = debounce(async (value: string) => {
+      setSearchResults(await searchUsers(value));
+    }, 2000);
   }, []);
 
   const handleSearchTermChange = (value: string) => {
@@ -83,54 +70,63 @@ export const ChatBox = () => {
       }));
   };
 
-  const handleContactSelect = (_: string, item: SearchResult | null) => {
-    if (item) {
-      dispatch(
-        setSelectedContact({
-          id: Number(item.id),
-          username: item.username,
-          token: null,
-          messages: [],
-        })
-      );
+  const handleContactSelect = (
+    _: React.SyntheticEvent<Element, Event>,
+    item: SearchResult | null,
+    reason: AutocompleteChangeReason,
+    details?: AutocompleteChangeDetails<SearchResult> | undefined
+  ) => {
+    console.log(`item= ${JSON.stringify(item)}`);
+
+    if (item && !isNaN(Number(item.id))) {
+      // Asegurarse de que item.id sea un número
+      onContactSelect({
+        id: Number(item.id),
+        username: item.username,
+        token: null,
+        messages: [],
+      });
+    } else {
+      onContactSelect(null);
     }
   };
 
   return (
-    <div className={classes.root}>
-      <Grid container>
-        <Grid item xs={12} className={classes.searchContainer}>
-          <Autocomplete
-            getOptionLabel={(option: SearchResult) => option.username}
-            options={searchResults}
-            value={selectedContactSearchResult}
-            inputValue={searchTerm}
-            onInputChange={(_, newInputValue) => {
-              handleSearchTermChange(newInputValue);
-            }}
-            onChange={(_, newValue) => {
-              if (newValue) {
-                handleContactSelect("", newValue);
-              }
-            }}
-            renderInput={(params: AutocompleteRenderInputParams) => (
-              <TextField
-                {...params}
-                className={classes.input}
-                placeholder="Buscar contactos"
-                variant="outlined"
-                fullWidth
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                  }
-                }}
-              />
-            )}
-            clearOnBlur={false} // Agregar esta línea
-          />
-        </Grid>
+    <Grid container sx={{ flexGrow: 1 }}>
+      <Grid
+        item
+        xs={12}
+        sx={{ justifyContent: "center", alignItems: "center" }}
+      >
+        <Autocomplete
+          getOptionLabel={(option: SearchResult) => option.username}
+          options={searchResults}
+          inputValue={searchTerm}
+          onInputChange={(_, newInputValue) => {
+            handleSearchTermChange(newInputValue);
+          }}
+          onChange={handleContactSelect}
+          renderInput={(params: AutocompleteRenderInputParams) => (
+            <TextField
+              {...params}
+              sx={{ margin: 1, width: "100%" }}
+              placeholder="Buscar contactos"
+              variant="outlined"
+              fullWidth
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                }
+              }}
+            />
+          )}
+          isOptionEqualToValue={(option, value) =>
+            option.id === value.id && option.username === value.username
+          }
+          clearOnBlur={false}
+        />
       </Grid>
-    </div>
-  );
+    </Grid>
+  );  
+  
 };
